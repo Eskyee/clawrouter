@@ -139,7 +139,7 @@ Request → Weighted Scorer (15 dimensions) → Tier → Cheapest Model → Resp
 | o3                      | $2.00     | $8.00      | 200K    |    \*     |
 | o4-mini                 | $1.10     | $4.40      | 128K    |    \*     |
 | **Anthropic**           |           |            |         |           |
-| claude-opus-4.5         | $5.00     | $25.00     | 200K    |    \*     |
+| claude-opus-4.6         | $5.00     | $25.00     | 200K    |    \*     |
 | claude-sonnet-4.6       | $3.00     | $15.00     | 200K    |    \*     |
 | claude-haiku-4.5        | $1.00     | $5.00      | 200K    |           |
 | **Google**              |           |            |         |           |

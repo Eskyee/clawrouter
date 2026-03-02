@@ -4,6 +4,49 @@ All notable changes to ClawRouter.
 
 ---
 
+## v0.11.11 — Mar 2, 2026
+
+- **Input token logging** — usage logs now include `inputTokens` from provider responses
+
+## v0.11.10 — Mar 2, 2026
+
+- **Gemini 3.x in allowlist** — replaced Gemini 2.5 with Gemini 3.1 Pro and Gemini 3 Flash Preview
+
+## v0.11.9 — Mar 2, 2026
+
+- **Top 16 model allowlist** — trimmed from 88 to 16 curated models in `/model` picker (4 routing profiles + 12 popular models)
+
+## v0.11.8 — Mar 2, 2026
+
+- **Populate model allowlist** — populate `agents.defaults.models` with BlockRun models so they appear in `/model` picker
+
+## v0.11.7 — Mar 1, 2026
+
+- **Auto-fix broken allowlist** — `injectModelsConfig()` detects and removes blockrun-only allowlist on every gateway start
+
+## v0.11.6 — Mar 1, 2026
+
+- **Allowlist cleanup in reinstall.sh** — detect and remove blockrun-only allowlist that hid all other models
+
+## v0.11.5 — Mar 1, 2026
+
+- **`clawrouter report` command** — daily/weekly/monthly usage reports via `npx @blockrun/clawrouter report`
+- **`clawrouter doctor` command** — AI diagnostics for troubleshooting
+
+## v0.11.4 — Mar 1, 2026
+
+- **catbox.moe image hosting** — `/imagegen` uploads base64 data URIs to catbox.moe (replaces broken telegra.ph)
+
+## v0.11.3 — Mar 1, 2026
+
+- **Image upload for Telegram** — base64 data URIs from Google image models converted to hosted URLs
+
+## v0.11.2 — Feb 28, 2026
+
+- **Output raw image URL** — `/imagegen` returns plain URL instead of markdown syntax for Telegram compatibility
+
+---
+
 ## v0.11.0 / v0.11.1 — Feb 28, 2026
 
 ### Three-Strike Escalation

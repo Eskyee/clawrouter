@@ -166,8 +166,8 @@ if (!store.profiles[profileKey]) {
 echo "→ Cleaning models cache..."
 rm -f ~/.openclaw/agents/*/agent/models.json 2>/dev/null || true
 
-# ── Step 8: Migrate allowlist (remove blockrun-only filter) ────
-echo "→ Migrating model allowlist..."
+# ── Step 8: Populate model allowlist with top 16 models ────────
+echo "→ Populating model allowlist..."
 node -e "
 const os = require('os');
 const fs = require('fs');
@@ -181,27 +181,38 @@ if (!fs.existsSync(configPath)) {
 
 try {
   const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-  const allowlist = config?.agents?.defaults?.models;
-  if (!allowlist || typeof allowlist !== 'object') {
-    console.log('  No allowlist found, skipping');
-    process.exit(0);
+
+  // Top 16 models for the /model picker
+  const TOP_MODELS = [
+    'auto', 'free', 'eco', 'premium',
+    'anthropic/claude-sonnet-4.6', 'anthropic/claude-opus-4.6', 'anthropic/claude-haiku-4.5',
+    'openai/gpt-5.2', 'openai/gpt-4o', 'openai/o3',
+    'google/gemini-3.1-pro', 'google/gemini-3-flash-preview',
+    'deepseek/deepseek-chat', 'moonshot/kimi-k2.5',
+    'xai/grok-3', 'minimax/minimax-m2.5'
+  ];
+
+  if (!config.agents) config.agents = {};
+  if (!config.agents.defaults) config.agents.defaults = {};
+  if (!config.agents.defaults.models || typeof config.agents.defaults.models !== 'object') {
+    config.agents.defaults.models = {};
   }
 
-  const keys = Object.keys(allowlist);
-  if (keys.length === 0) {
-    console.log('  Allowlist already empty (allow all)');
-    process.exit(0);
+  const allowlist = config.agents.defaults.models;
+  // Clean out old blockrun entries not in TOP_MODELS
+  const topSet = new Set(TOP_MODELS.map(id => 'blockrun/' + id));
+  for (const key of Object.keys(allowlist)) {
+    if (key.startsWith('blockrun/') && !topSet.has(key)) {
+      delete allowlist[key];
+    }
   }
-
-  const blockrunKeys = keys.filter(k => k.startsWith('blockrun/'));
-  if (blockrunKeys.length === 0) {
-    console.log('  No blockrun entries in allowlist, skipping');
-    process.exit(0);
-  }
-
-  // Remove blockrun entries
-  for (const k of blockrunKeys) {
-    delete allowlist[k];
+  let added = 0;
+  for (const id of TOP_MODELS) {
+    const key = 'blockrun/' + id;
+    if (!allowlist[key]) {
+      allowlist[key] = {};
+      added++;
+    }
   }
 
   // Atomic write
@@ -209,11 +220,10 @@ try {
   fs.writeFileSync(tmpPath, JSON.stringify(config, null, 2));
   fs.renameSync(tmpPath, configPath);
 
-  const remaining = Object.keys(allowlist).length;
-  if (remaining === 0) {
-    console.log('  Cleared blockrun-only allowlist (all providers now visible)');
+  if (added > 0) {
+    console.log('  Added ' + added + ' models to allowlist (' + TOP_MODELS.length + ' total)');
   } else {
-    console.log('  Removed ' + blockrunKeys.length + ' blockrun entries (' + remaining + ' user entries kept)');
+    console.log('  Allowlist already up to date');
   }
 } catch (err) {
   console.log('  Migration skipped: ' + err.message);
