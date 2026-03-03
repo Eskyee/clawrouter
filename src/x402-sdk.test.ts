@@ -113,7 +113,8 @@ describe("x402 SDK integration", () => {
 
     it("attempts payment on 402 response", async () => {
       // First call returns 402, second (after payment) returns 200
-      const mockFetch = vi.fn()
+      const mockFetch = vi
+        .fn()
         .mockResolvedValueOnce(
           new Response(JSON.stringify({ error: "payment required" }), {
             status: 402,
@@ -122,26 +123,26 @@ describe("x402 SDK integration", () => {
                 x402Version: 1,
                 scheme: "exact",
                 network: "base",
-                paymentRequirements: [{
-                  scheme: "exact",
-                  network: "base",
-                  maxAmountRequired: "1000",
-                  resource: "https://example.com/api",
-                  description: "test",
-                  mimeType: "application/json",
-                  payTo: "0x0000000000000000000000000000000000000001",
-                  maxTimeoutSeconds: 60,
-                  asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-                  outputSchema: undefined,
-                  extra: {},
-                }],
+                paymentRequirements: [
+                  {
+                    scheme: "exact",
+                    network: "base",
+                    maxAmountRequired: "1000",
+                    resource: "https://example.com/api",
+                    description: "test",
+                    mimeType: "application/json",
+                    payTo: "0x0000000000000000000000000000000000000001",
+                    maxTimeoutSeconds: 60,
+                    asset: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                    outputSchema: undefined,
+                    extra: {},
+                  },
+                ],
               }),
             },
           }),
         )
-        .mockResolvedValueOnce(
-          new Response(JSON.stringify({ result: "paid" }), { status: 200 }),
-        );
+        .mockResolvedValueOnce(new Response(JSON.stringify({ result: "paid" }), { status: 200 }));
 
       const client = createTestEvmClient();
       const payFetch = wrapFetchWithPayment(mockFetch as unknown as typeof fetch, client);
@@ -166,9 +167,7 @@ describe("x402 SDK integration", () => {
     });
 
     it("preserves request headers on non-402 pass-through", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response("ok", { status: 200 }),
-      );
+      const mockFetch = vi.fn().mockResolvedValue(new Response("ok", { status: 200 }));
 
       const client = createTestEvmClient();
       const payFetch = wrapFetchWithPayment(mockFetch as unknown as typeof fetch, client);

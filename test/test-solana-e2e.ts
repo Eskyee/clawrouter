@@ -40,7 +40,10 @@ async function run() {
   assert(mnemonic.split(" ").length === 24, "Generated 24-word mnemonic");
 
   const evm = deriveEvmKey(mnemonic);
-  assert(evm.privateKey.startsWith("0x") && evm.privateKey.length === 66, `EVM key derived: ${evm.privateKey.slice(0, 10)}...`);
+  assert(
+    evm.privateKey.startsWith("0x") && evm.privateKey.length === 66,
+    `EVM key derived: ${evm.privateKey.slice(0, 10)}...`,
+  );
 
   const solanaBytes = deriveSolanaKeyBytes(mnemonic);
   assert(solanaBytes.length === 32, `Solana private key derived: ${solanaBytes.length} bytes`);
@@ -48,7 +51,10 @@ async function run() {
   // Verify Solana signer creation
   const { createKeyPairSignerFromPrivateKeyBytes } = await import("@solana/kit");
   const solanaSigner = await createKeyPairSignerFromPrivateKeyBytes(solanaBytes);
-  assert(typeof solanaSigner.address === "string" && solanaSigner.address.length > 30, `Solana address: ${solanaSigner.address}`);
+  assert(
+    typeof solanaSigner.address === "string" && solanaSigner.address.length > 30,
+    `Solana address: ${solanaSigner.address}`,
+  );
 
   // --- Part 2: Proxy with dual-chain support ---
   console.log("\n--- Part 2: Proxy startup with both chains ---\n");
@@ -81,9 +87,15 @@ async function run() {
   };
   assert(healthData.status === "ok", `Health status: ${healthData.status}`);
   assert(typeof healthData.wallet === "string", `Health reports EVM wallet: ${healthData.wallet}`);
-  assert(healthData.paymentChain === requestedChain, `Health reports payment chain: ${healthData.paymentChain}`);
+  assert(
+    healthData.paymentChain === requestedChain,
+    `Health reports payment chain: ${healthData.paymentChain}`,
+  );
   if (requestedChain === "solana") {
-    assert(typeof healthData.solana === "string" && healthData.solana.length > 30, `Health reports Solana wallet: ${healthData.solana}`);
+    assert(
+      typeof healthData.solana === "string" && healthData.solana.length > 30,
+      `Health reports Solana wallet: ${healthData.solana}`,
+    );
   }
 
   // --- Part 4: Real API request (402 payment flow) ---

@@ -324,36 +324,33 @@ async function analyzeWithAI(
     registerExactEvmScheme(x402, { signer: evmSigner });
     const paymentFetch = wrapFetchWithPayment(fetch, x402);
 
-    const response = await paymentFetch(
-      "https://blockrun.ai/api/v1/chat/completions",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: modelConfig.id,
-          stream: false,
-          messages: [
-            {
-              role: "system",
-              content: `You are a technical support expert for BlockRun and ClawRouter.
+    const response = await paymentFetch("https://blockrun.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: modelConfig.id,
+        stream: false,
+        messages: [
+          {
+            role: "system",
+            content: `You are a technical support expert for BlockRun and ClawRouter.
 Analyze the diagnostics and:
 1. Identify the root cause of any issues
 2. Provide specific, actionable fix commands (bash)
 3. Explain why the issue occurred briefly
 4. Be concise but thorough
 5. Format commands in code blocks`,
-            },
-            {
-              role: "user",
-              content: userQuestion
-                ? `Here are my system diagnostics:\n\n${JSON.stringify(diagnostics, null, 2)}\n\nUser's question: ${userQuestion}`
-                : `Here are my system diagnostics:\n\n${JSON.stringify(diagnostics, null, 2)}\n\nPlease analyze and help me fix any issues.`,
-            },
-          ],
-          max_tokens: 1000,
-        }),
-      },
-    );
+          },
+          {
+            role: "user",
+            content: userQuestion
+              ? `Here are my system diagnostics:\n\n${JSON.stringify(diagnostics, null, 2)}\n\nUser's question: ${userQuestion}`
+              : `Here are my system diagnostics:\n\n${JSON.stringify(diagnostics, null, 2)}\n\nPlease analyze and help me fix any issues.`,
+          },
+        ],
+        max_tokens: 1000,
+      }),
+    });
 
     if (!response.ok) {
       const text = await response.text();

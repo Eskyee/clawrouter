@@ -75,7 +75,9 @@ export function createPayFetchWithPreAuth(
       try {
         const responseText = await response.text();
         if (responseText) body = JSON.parse(responseText);
-      } catch { /* empty body is fine */ }
+      } catch {
+        /* empty body is fine */
+      }
       paymentRequired = httpClient.getPaymentRequiredResponse(getHeader, body);
       cache.set(urlPath, { paymentRequired, cachedAt: Date.now() });
     } catch (error) {

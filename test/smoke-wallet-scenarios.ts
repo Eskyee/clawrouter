@@ -27,8 +27,13 @@ let passed = 0;
 let failed = 0;
 
 function assert(ok: boolean, msg: string) {
-  if (ok) { console.log(`  ✓ ${msg}`); passed++; }
-  else { console.error(`  ✗ FAIL: ${msg}`); failed++; }
+  if (ok) {
+    console.log(`  ✓ ${msg}`);
+    passed++;
+  } else {
+    console.error(`  ✗ FAIL: ${msg}`);
+    failed++;
+  }
 }
 
 function clean() {
@@ -49,7 +54,10 @@ clean();
   const result = await resolveOrGenerateWalletKey();
 
   assert(result.source === "generated", `Source: ${result.source}`);
-  assert(result.key.startsWith("0x") && result.key.length === 66, `EVM key valid: ${result.key.slice(0, 12)}...`);
+  assert(
+    result.key.startsWith("0x") && result.key.length === 66,
+    `EVM key valid: ${result.key.slice(0, 12)}...`,
+  );
   assert(result.address.startsWith("0x"), `EVM address: ${result.address}`);
   assert(result.mnemonic !== undefined, `Mnemonic returned`);
   assert(result.solanaPrivateKeyBytes !== undefined, `Solana key bytes returned`);
@@ -71,7 +79,10 @@ clean();
   const keyPerms = statSync(WALLET_FILE).mode & 0o777;
   assert(keyPerms === 0o600, `wallet.key permissions: ${keyPerms.toString(8)} (expect 600)`);
   const mnemonicPerms = statSync(MNEMONIC_FILE).mode & 0o777;
-  assert(mnemonicPerms === 0o600, `mnemonic permissions: ${mnemonicPerms.toString(8)} (expect 600)`);
+  assert(
+    mnemonicPerms === 0o600,
+    `mnemonic permissions: ${mnemonicPerms.toString(8)} (expect 600)`,
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════

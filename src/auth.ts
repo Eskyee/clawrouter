@@ -135,9 +135,9 @@ async function generateAndSaveWallet(): Promise<{
   if (existingMnemonic) {
     throw new Error(
       `Mnemonic file exists at ${MNEMONIC_FILE} but wallet.key is missing. ` +
-      `This means a Solana wallet was derived from this mnemonic. ` +
-      `Refusing to generate a new wallet to protect Solana funds. ` +
-      `Restore your EVM key with: export BLOCKRUN_WALLET_KEY=<your_key>`,
+        `This means a Solana wallet was derived from this mnemonic. ` +
+        `Refusing to generate a new wallet to protect Solana funds. ` +
+        `Restore your EVM key with: export BLOCKRUN_WALLET_KEY=<your_key>`,
     );
   }
 
@@ -272,9 +272,7 @@ export async function setupSolana(): Promise<{
   // Safety: mnemonic must not already exist
   const existing = await loadMnemonic();
   if (existing) {
-    throw new Error(
-      "Solana wallet already set up. Mnemonic file exists at " + MNEMONIC_FILE,
-    );
+    throw new Error("Solana wallet already set up. Mnemonic file exists at " + MNEMONIC_FILE);
   }
 
   // Safety: wallet.key must exist (can't set up Solana without EVM wallet)

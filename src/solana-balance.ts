@@ -110,12 +110,16 @@ export class SolanaBalanceMonitor {
 
       let total = 0n;
       for (const account of response.value) {
-        const parsed = account.account.data as { parsed: { info: { tokenAmount: { amount: string } } } };
+        const parsed = account.account.data as {
+          parsed: { info: { tokenAmount: { amount: string } } };
+        };
         total += BigInt(parsed.parsed.info.tokenAmount.amount);
       }
       return total;
     } catch (err) {
-      throw new Error(`Failed to fetch Solana USDC balance: ${err instanceof Error ? err.message : String(err)}`);
+      throw new Error(
+        `Failed to fetch Solana USDC balance: ${err instanceof Error ? err.message : String(err)}`,
+      );
     } finally {
       clearTimeout(timer);
     }

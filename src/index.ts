@@ -25,7 +25,14 @@ import type {
 } from "./types.js";
 import { blockrunProvider, setActiveProxy } from "./provider.js";
 import { startProxy, getProxyPort } from "./proxy.js";
-import { resolveOrGenerateWalletKey, setupSolana, savePaymentChain, resolvePaymentChain, WALLET_FILE, MNEMONIC_FILE } from "./auth.js";
+import {
+  resolveOrGenerateWalletKey,
+  setupSolana,
+  savePaymentChain,
+  resolvePaymentChain,
+  WALLET_FILE,
+  MNEMONIC_FILE,
+} from "./auth.js";
 import type { RoutingConfig } from "./router/index.js";
 import { BalanceMonitor } from "./balance.js";
 
@@ -755,7 +762,9 @@ async function createWalletCommand(): Promise<OpenClawPluginCommandDefinition> {
           !solanaSection ? "• `/wallet solana` - Enable Solana payments" : "",
           solanaSection ? "• `/wallet base` - Switch to Base (EVM)" : "",
           solanaSection ? "• `/wallet solana` - Switch to Solana" : "",
-        ].filter(Boolean).join("\n"),
+        ]
+          .filter(Boolean)
+          .join("\n"),
       };
     },
   };
@@ -961,7 +970,14 @@ export default plugin;
 
 // Re-export for programmatic use
 export { startProxy, getProxyPort } from "./proxy.js";
-export type { ProxyOptions, ProxyHandle, WalletConfig, PaymentChain, LowBalanceInfo, InsufficientFundsInfo } from "./proxy.js";
+export type {
+  ProxyOptions,
+  ProxyHandle,
+  WalletConfig,
+  PaymentChain,
+  LowBalanceInfo,
+  InsufficientFundsInfo,
+} from "./proxy.js";
 export type { WalletResolution } from "./auth.js";
 export { blockrunProvider } from "./provider.js";
 export {

@@ -280,7 +280,9 @@ export function getProxyPort(): number {
  * Check if a proxy is already running on the given port.
  * Returns the wallet address if running, undefined otherwise.
  */
-async function checkExistingProxy(port: number): Promise<{ wallet: string; paymentChain?: string } | undefined> {
+async function checkExistingProxy(
+  port: number,
+): Promise<{ wallet: string; paymentChain?: string } | undefined> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), HEALTH_CHECK_TIMEOUT_MS);
 
@@ -291,7 +293,11 @@ async function checkExistingProxy(port: number): Promise<{ wallet: string; payme
     clearTimeout(timeoutId);
 
     if (response.ok) {
-      const data = (await response.json()) as { status?: string; wallet?: string; paymentChain?: string };
+      const data = (await response.json()) as {
+        status?: string;
+        wallet?: string;
+        paymentChain?: string;
+      };
       if (data.status === "ok" && data.wallet) {
         return { wallet: data.wallet, paymentChain: data.paymentChain };
       }
@@ -988,10 +994,7 @@ async function proxyPartnerRequest(
   req: IncomingMessage,
   res: ServerResponse,
   apiBase: string,
-  payFetch: (
-    input: RequestInfo | URL,
-    init?: RequestInit,
-  ) => Promise<Response>,
+  payFetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
 ): Promise<void> {
   const startTime = Date.now();
   const upstreamUrl = `${apiBase}${req.url}`;
@@ -1116,10 +1119,14 @@ export async function startProxy(options: ProxyOptions): Promise<ProxyHandle> {
 
   // Payment chain: options > env var > persisted file > default "base".
   // No dynamic switching — user selects chain via /wallet solana or /wallet base.
-  const paymentChain = options.paymentChain ?? await resolvePaymentChain();
-  const apiBase = options.apiBase ?? (paymentChain === "solana" && solanaPrivateKeyBytes ? BLOCKRUN_SOLANA_API : BLOCKRUN_API);
+  const paymentChain = options.paymentChain ?? (await resolvePaymentChain());
+  const apiBase =
+    options.apiBase ??
+    (paymentChain === "solana" && solanaPrivateKeyBytes ? BLOCKRUN_SOLANA_API : BLOCKRUN_API);
   if (paymentChain === "solana" && !solanaPrivateKeyBytes) {
-    console.warn(`[ClawRouter] Payment chain is Solana but no Solana keys provided. Using Base (EVM).`);
+    console.warn(
+      `[ClawRouter] Payment chain is Solana but no Solana keys provided. Using Base (EVM).`,
+    );
   } else if (paymentChain === "solana") {
     console.log(`[ClawRouter] Payment chain: Solana (${BLOCKRUN_SOLANA_API})`);
   }
@@ -1146,15 +1153,17 @@ export async function startProxy(options: ProxyOptions): Promise<ProxyHandle> {
       if (existingProxy.paymentChain !== paymentChain) {
         throw new Error(
           `Existing proxy on port ${listenPort} is using ${existingProxy.paymentChain} but ${paymentChain} was requested. ` +
-          `Stop the existing proxy first or use a different port.`,
+            `Stop the existing proxy first or use a different port.`,
         );
       }
     } else if (paymentChain !== "base") {
       // Old proxy doesn't report chain — assume Base. Reject if Solana was requested.
-      console.warn(`[ClawRouter] Existing proxy on port ${listenPort} does not report paymentChain (pre-v0.11 instance). Assuming Base.`);
+      console.warn(
+        `[ClawRouter] Existing proxy on port ${listenPort} does not report paymentChain (pre-v0.11 instance). Assuming Base.`,
+      );
       throw new Error(
         `Existing proxy on port ${listenPort} is a pre-v0.11 instance (assumed Base) but ${paymentChain} was requested. ` +
-        `Stop the existing proxy first or use a different port.`,
+          `Stop the existing proxy first or use a different port.`,
       );
     }
 
@@ -1210,7 +1219,11 @@ export async function startProxy(options: ProxyOptions): Promise<ProxyHandle> {
   // Log which chain is used for each payment
   x402.onAfterPaymentCreation(async (context) => {
     const network = context.selectedRequirements.network;
-    const chain = network.startsWith("eip155") ? "Base (EVM)" : network.startsWith("solana") ? "Solana" : network;
+    const chain = network.startsWith("eip155")
+      ? "Base (EVM)"
+      : network.startsWith("solana")
+        ? "Solana"
+        : network;
     console.log(`[ClawRouter] Payment signed on ${chain} (${network})`);
   });
 
@@ -1423,7 +1436,11 @@ export async function startProxy(options: ProxyOptions): Promise<ProxyHandle> {
           if (existingProxy2) {
             // Proxy is actually running - this is fine, reuse it
             console.log(`[ClawRouter] Existing proxy detected on port ${listenPort}, reusing`);
-            rejectAttempt({ code: "REUSE_EXISTING", wallet: existingProxy2.wallet, existingChain: existingProxy2.paymentChain });
+            rejectAttempt({
+              code: "REUSE_EXISTING",
+              wallet: existingProxy2.wallet,
+              existingChain: existingProxy2.paymentChain,
+            });
             return;
           }
 
@@ -1462,14 +1479,19 @@ export async function startProxy(options: ProxyOptions): Promise<ProxyHandle> {
       await tryListen(attempt);
       break; // Success
     } catch (err: unknown) {
-      const error = err as { code?: string; wallet?: string; existingChain?: string; attempt?: number };
+      const error = err as {
+        code?: string;
+        wallet?: string;
+        existingChain?: string;
+        attempt?: number;
+      };
 
       if (error.code === "REUSE_EXISTING" && error.wallet) {
         // Validate payment chain matches (same check as pre-listen reuse path)
         if (error.existingChain && error.existingChain !== paymentChain) {
           throw new Error(
             `Existing proxy on port ${listenPort} is using ${error.existingChain} but ${paymentChain} was requested. ` +
-            `Stop the existing proxy first or use a different port.`,
+              `Stop the existing proxy first or use a different port.`,
           );
         }
 
@@ -1605,10 +1627,7 @@ async function tryModelRequest(
   body: Buffer,
   modelId: string,
   maxTokens: number,
-  payFetch: (
-    input: RequestInfo | URL,
-    init?: RequestInit,
-  ) => Promise<Response>,
+  payFetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
   balanceMonitor: AnyBalanceMonitor,
   signal: AbortSignal,
 ): Promise<ModelRequestResult> {
@@ -1656,15 +1675,12 @@ async function tryModelRequest(
   }
 
   try {
-    const response = await payFetch(
-      upstreamUrl,
-      {
-        method,
-        headers,
-        body: requestBody.length > 0 ? new Uint8Array(requestBody) : undefined,
-        signal,
-      },
-    );
+    const response = await payFetch(upstreamUrl, {
+      method,
+      headers,
+      body: requestBody.length > 0 ? new Uint8Array(requestBody) : undefined,
+      signal,
+    });
 
     // Check for provider errors
     if (response.status !== 200) {
@@ -1724,10 +1740,7 @@ async function proxyRequest(
   req: IncomingMessage,
   res: ServerResponse,
   apiBase: string,
-  payFetch: (
-    input: RequestInfo | URL,
-    init?: RequestInit,
-  ) => Promise<Response>,
+  payFetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
   options: ProxyOptions,
   routerOpts: RouterOptions,
   deduplicator: RequestDeduplicator,
@@ -2970,7 +2983,14 @@ async function proxyRequest(
               if (balanceFallbackNotice) {
                 const noticeChunk = {
                   ...baseChunk,
-                  choices: [{ index, delta: { content: balanceFallbackNotice }, logprobs: null, finish_reason: null }],
+                  choices: [
+                    {
+                      index,
+                      delta: { content: balanceFallbackNotice },
+                      logprobs: null,
+                      finish_reason: null,
+                    },
+                  ],
                 };
                 const noticeData = `data: ${JSON.stringify(noticeChunk)}\n\n`;
                 safeWrite(res, noticeData);
@@ -3098,10 +3118,13 @@ async function proxyRequest(
             choices?: Array<{ message?: { content?: string } }>;
           };
           if (parsed.choices?.[0]?.message?.content !== undefined) {
-            parsed.choices[0].message.content = balanceFallbackNotice + parsed.choices[0].message.content;
+            parsed.choices[0].message.content =
+              balanceFallbackNotice + parsed.choices[0].message.content;
             responseBody = Buffer.from(JSON.stringify(parsed));
           }
-        } catch { /* not JSON, skip notice */ }
+        } catch {
+          /* not JSON, skip notice */
+        }
         balanceFallbackNotice = undefined;
       }
 
