@@ -119,6 +119,7 @@ export class SolanaBalanceMonitor {
     } catch (err) {
       throw new Error(
         `Failed to fetch Solana USDC balance: ${err instanceof Error ? err.message : String(err)}`,
+        { cause: err },
       );
     } finally {
       clearTimeout(timer);

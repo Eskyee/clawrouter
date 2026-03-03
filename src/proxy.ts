@@ -1492,6 +1492,7 @@ export async function startProxy(options: ProxyOptions): Promise<ProxyHandle> {
           throw new Error(
             `Existing proxy on port ${listenPort} is using ${error.existingChain} but ${paymentChain} was requested. ` +
               `Stop the existing proxy first or use a different port.`,
+            { cause: err },
           );
         }
 

@@ -83,6 +83,7 @@ export function createPayFetchWithPreAuth(
     } catch (error) {
       throw new Error(
         `Failed to parse payment requirements: ${error instanceof Error ? error.message : "Unknown error"}`,
+        { cause: error },
       );
     }
 

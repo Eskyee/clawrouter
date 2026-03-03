@@ -695,7 +695,7 @@ async function createWalletCommand(): Promise<OpenClawPluginCommandDefinition> {
       }
 
       // Default: show wallet status
-      let evmBalanceText = "Balance: (checking...)";
+      let evmBalanceText: string;
       try {
         const monitor = new BalanceMonitor(address);
         const balance = await monitor.checkBalance();
