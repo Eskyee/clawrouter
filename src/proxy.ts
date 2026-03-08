@@ -2262,11 +2262,14 @@ async function proxyRequest(
       const resolvedModel = resolveModelAlias(normalizedModel);
       const wasAlias = resolvedModel !== normalizedModel;
 
-      const isRoutingProfile = ROUTING_PROFILES.has(normalizedModel);
+      // Check both normalizedModel and resolvedModel — OpenClaw may send "openai/eco"
+      // which resolveModelAlias strips to "eco" (a valid routing profile)
+      const isRoutingProfile =
+        ROUTING_PROFILES.has(normalizedModel) || ROUTING_PROFILES.has(resolvedModel);
 
       // Extract routing profile type (free/eco/auto/premium)
       if (isRoutingProfile) {
-        const profileName = normalizedModel.replace("blockrun/", "");
+        const profileName = resolvedModel.replace("blockrun/", "");
         routingProfile = profileName as "free" | "eco" | "auto" | "premium";
       }
 
