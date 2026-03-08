@@ -1178,9 +1178,9 @@ export async function startProxy(options: ProxyOptions): Promise<ProxyHandle> {
     options.apiBase ??
     (paymentChain === "solana" && solanaPrivateKeyBytes ? BLOCKRUN_SOLANA_API : BLOCKRUN_API);
   if (paymentChain === "solana" && !solanaPrivateKeyBytes) {
-    console.warn(
-      `[ClawRouter] Payment chain is Solana but no Solana keys provided. Using Base (EVM).`,
-    );
+    console.warn(`[ClawRouter] ⚠ Payment chain is Solana but no mnemonic found — falling back to Base (EVM).`);
+    console.warn(`[ClawRouter]   To fix: run "npx @blockrun/clawrouter wallet recover" if your mnemonic exists,`);
+    console.warn(`[ClawRouter]   or run "npx @blockrun/clawrouter chain base" to switch to EVM.`);
   } else if (paymentChain === "solana") {
     console.log(`[ClawRouter] Payment chain: Solana (${BLOCKRUN_SOLANA_API})`);
   }
