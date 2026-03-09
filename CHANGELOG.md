@@ -4,6 +4,13 @@ All notable changes to ClawRouter.
 
 ---
 
+## v0.12.25 — Mar 8, 2026
+
+- **Image generation docs** — new `docs/image-generation.md` with API reference, curl/TypeScript/Python/OpenAI SDK examples, model pricing table, and `/imagegen` command reference
+- **Comprehensive docs refresh** — architecture updated for dual-chain (Base + Solana), configuration updated with all env vars (`CLAWROUTER_SOLANA_RPC_URL`, `CLAWROUTER_WORKER`), troubleshooting updated for USDC-on-Solana funding, CHANGELOG backfilled for v0.11.14–v0.12.24
+
+---
+
 ## v0.12.24 — Mar 8, 2026
 
 - **Preserve user-defined blockrun/* allowlist entries** — `injectModelsConfig()` no longer removes user-added `blockrun/*` allowlist entries on gateway restarts
