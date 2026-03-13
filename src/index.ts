@@ -843,7 +843,7 @@ async function createWalletCommand(): Promise<OpenClawPluginCommandDefinition> {
               "**Solana:**",
               `  Address: \`${solAddr}\``,
               `  ${solBalanceText}`,
-              `  Fund: https://solscan.io/account/${solAddr}`,
+              `  Fund (USDC only): https://solscan.io/account/${solAddr}`,
             ].join("\n");
           }
         }
@@ -863,7 +863,7 @@ async function createWalletCommand(): Promise<OpenClawPluginCommandDefinition> {
           "**Base (EVM):**",
           `  Address: \`${address}\``,
           `  ${evmBalanceText}`,
-          `  Fund: https://basescan.org/address/${address}`,
+          `  Fund (USDC only): https://basescan.org/address/${address}`,
           solanaSection,
           "",
           `**Key File:** \`${WALLET_FILE}\``,
